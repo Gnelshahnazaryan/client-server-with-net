@@ -5,7 +5,7 @@ const client = net.createConnection({ port: 3000, host: "localhost" }, () => {
 });
 
 client.on("data", (data) => {
-    console.log("Server says: ", data.toString());
+    console.log(data.toString());
 });
 
 process.stdin.on("data", (data) => {

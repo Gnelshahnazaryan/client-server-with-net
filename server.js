@@ -5,13 +5,12 @@ const clients = new Map();
 function broadcast(message, senderSocket = null) {
     for (const client of clients.values()) {
         if (client !== senderSocket) {
-            client.write(`${senderSocket.username} says: `, message);
+            client.write(`${senderSocket.username} says: ${message}\n`);
         }
     }
 }
 
 const server = net.createServer((socket) => {
-    console.log(clients.size);
     if (clients.size >= 5) {
         socket.write("Server full (max 5 clients)\n");
         socket.destroy();
@@ -21,7 +20,7 @@ const server = net.createServer((socket) => {
     console.log("Client Connected");
 
     socket.username = null;
-    socket.write("Enter your name");
+    socket.write("*** System: Enter your name");
 
     socket.on("data", (data) => {
         if (!socket.username) {
@@ -80,7 +79,12 @@ const server = net.createServer((socket) => {
 
     socket.on("close", () => {
         console.log(`${socket.username} disconnected`);
+        clients.delete(socket.username);
     });
+});
+
+server.on("error", (err) => {
+    console.error("Server error:", err);
 });
 
 server.listen(3000, "localhost", () => {
